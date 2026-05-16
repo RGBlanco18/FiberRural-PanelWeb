@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Admin</title>
+
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+  <h1>Dashboard Admin</h1>
+  <p>Panel administrativo del sistema</p>
+</header>
+
+<div class="container">
+
+  <!-- CARDS -->
+  <div class="grid">
+
+    <div class="card" onclick="goTo('users')">
+      <p>Usuarios</p>
+      <h2>--</h2>
+    </div>
+
+    <div class="card" onclick="goTo('reports')">
+      <p>Reportes</p>
+      <h2>--</h2>
+    </div>
+
+    <div class="card" onclick="goTo('active')">
+      <p>Activos</p>
+      <h2>--</h2>
+    </div>
+
+    <div class="card" onclick="goTo('resolved')">
+      <p>Resueltos</p>
+      <h2>--</h2>
+    </div>
+
+  </div>
+
+  <!-- SECCIONES -->
+  <div id="users" class="section hidden">
+    <h2>Usuarios</h2>
+    <p>Datos de usuarios desde la API.</p>
+  </div>
+
+  <div id="reports" class="section">
+    <h2>Reportes</h2>
+    <p>Listado general de reportes.</p>
+  </div>
+
+  <div id="active" class="section hidden">
+    <h2>Activos</h2>
+    <p>Reportes en proceso.</p>
+  </div>
+
+  <div id="resolved" class="section hidden">
+    <h2>Resueltos</h2>
+    <p>Reportes finalizados.</p>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
