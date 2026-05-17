@@ -1,73 +1,154 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Dashboard Admin</title>
-
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #2a292d; font-size: 14px; }
+        th { color: #aaa; font-weight: 600; }
+        td { color: #e5e1e4; }
+        select.estado-select {
+            background: #2a292d;
+            color: #e5e1e4;
+            border: 1px solid #424754;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-pendiente { background: #3a3000; color: #f0c000; }
+        .badge-proceso   { background: #002a3a; color: #00aaff; }
+        .badge-resuelto  { background: #003a10; color: #00cc44; }
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #424754;
+            color: #e5e1e4;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .logout-btn:hover { background: #2a292d; }
+        header { display: flex; justify-content: space-between; align-items: center; }
+        .header-text h1 { margin: 0; }
+        .header-text p { margin: 4px 0 0; }
+    </style>
 </head>
-
 <body>
 
 <header>
-  <h1>Dashboard Admin</h1>
-  <p>Panel administrativo del sistema</p>
+    <div class="header-text">
+        <h1>Dashboard Admin</h1>
+        <p>Panel administrativo del sistema</p>
+    </div>
+    <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
 </header>
 
 <div class="container">
 
-  <!-- CARDS -->
-  <div class="grid">
-
-    <div class="card" onclick="goTo('users')">
-      <p>Usuarios</p>
-      <h2>--</h2>
+    <!-- CARDS -->
+    <div class="grid">
+        <div class="card" onclick="goTo('users')">
+            <p>Usuarios</p>
+            <h2 id="statUsuarios">--</h2>
+        </div>
+        <div class="card" onclick="goTo('reports')">
+            <p>Reportes</p>
+            <h2 id="statReportes">--</h2>
+        </div>
+        <div class="card" onclick="goTo('active')">
+            <p>Activos</p>
+            <h2 id="statActivos">--</h2>
+        </div>
+        <div class="card" onclick="goTo('resolved')">
+            <p>Resueltos</p>
+            <h2 id="statResueltos">--</h2>
+        </div>
     </div>
 
-    <div class="card" onclick="goTo('reports')">
-      <p>Reportes</p>
-      <h2>--</h2>
+    <!-- SECCIÓN USUARIOS -->
+    <div id="users" class="section hidden">
+        <h2>Usuarios</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody id="tablaUsuarios"></tbody>
+        </table>
     </div>
 
-    <div class="card" onclick="goTo('active')">
-      <p>Activos</p>
-      <h2>--</h2>
+    <!-- SECCIÓN TODOS LOS REPORTES -->
+    <div id="reports" class="section">
+        <h2>Reportes</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="tablaReportes"></tbody>
+        </table>
     </div>
 
-    <div class="card" onclick="goTo('resolved')">
-      <p>Resueltos</p>
-      <h2>--</h2>
+    <!-- SECCIÓN ACTIVOS -->
+    <div id="active" class="section hidden">
+        <h2>Reportes Activos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="tablaActivos"></tbody>
+        </table>
     </div>
 
-  </div>
-
-  <!-- SECCIONES -->
-  <div id="users" class="section hidden">
-    <h2>Usuarios</h2>
-    <p>Datos de usuarios desde la API.</p>
-  </div>
-
-  <div id="reports" class="section">
-    <h2>Reportes</h2>
-    <p>Listado general de reportes.</p>
-  </div>
-
-  <div id="active" class="section hidden">
-    <h2>Activos</h2>
-    <p>Reportes en proceso.</p>
-  </div>
-
-  <div id="resolved" class="section hidden">
-    <h2>Resueltos</h2>
-    <p>Reportes finalizados.</p>
-  </div>
+    <!-- SECCIÓN RESUELTOS -->
+    <div id="resolved" class="section hidden">
+        <h2>Reportes Resueltos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Dirección</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="tablaResueltos"></tbody>
+        </table>
+    </div>
 
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
