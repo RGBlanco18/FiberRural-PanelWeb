@@ -4,99 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin</title>
-
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-        <style>
-body {
-    background-color: #393d42;
-}
-
-.card {
-    border: none;
-    border-radius: 12px;
-}
-
-.btn-outline-custom {
-    border: 2px solid #000;
-    background: transparent;
-    color: #000;
-    transition: all 0.2s ease;
-}
-
-.btn-outline-custom:hover {
-    background: #000;
-    color: #393d42;
-}
-</style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #393d42; }
+        .card { border: none; border-radius: 12px; }
+        .btn-outline-custom {
+            border: 2px solid #000;
+            background: transparent;
+            color: #000;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-custom:hover {
+            background: #000;
+            color: #393d42;
+        }
+    </style>
 </head>
-
 <body class="bg-light">
 
 <div class="container" style="max-width: 420px; margin-top: 80px;">
-
     <div class="card shadow">
         <div class="card-body p-4">
 
             <h2 class="text-center mb-3">Iniciar Sesión</h2>
-            <p class="text-muted text-center mb-4">
-                Acceso exclusivo para administradores
-            </p>
+            <p class="text-muted text-center mb-4">Acceso exclusivo para administradores</p>
 
-            <!-- MENSAJE GENERAL -->
             <div id="divMensaje" class="d-none"></div>
 
             <form id="formLogin">
-
-                <!-- EMAIL -->
                 <div class="mb-3">
-                    <label for="txtCorreo" class="form-label">
-                        Correo electrónico
-                    </label>
-
-                    <input type="email"
-                           class="form-control"
-                           id="txtCorreo"
-                           placeholder="ej: admin@empresa.com">
-
-                    <span id="errorCorreo"
-                          class="text-danger small d-none"></span>
+                    <label for="txtCorreo" class="form-label">Correo electrónico</label>
+                    <input type="email" class="form-control" id="txtCorreo" placeholder="ej: admin@empresa.com">
+                    <span id="errorCorreo" class="text-danger small d-none"></span>
                 </div>
 
-                <!-- PASSWORD -->
                 <div class="mb-3">
-                    <label for="txtPassword" class="form-label">
-                        Contraseña
-                    </label>
-
-                    <input type="password"
-                           class="form-control"
-                           id="txtPassword"
-                           placeholder="Ingrese su contraseña">
-
-                    <span id="errorPassword"
-                          class="text-danger small d-none"></span>
+                    <label for="txtPassword" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="txtPassword" placeholder="Ingrese su contraseña">
+                    <span id="errorPassword" class="text-danger small d-none"></span>
                 </div>
 
-                <!-- BOTON -->
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-outline-custom w-100">
-                        Entrar al panel
-                    </button>
+                    <button type="submit" class="btn btn-outline-custom w-100">Entrar al panel</button>
                 </div>
-
             </form>
 
         </div>
     </div>
-
 </div>
 
-<script>
+<script>.1
+const API = "http://192.168.100.31:8000";
+
 const form = document.getElementById("formLogin");
 const correo = document.getElementById("txtCorreo");
 const pass = document.getElementById("txtPassword");
-
 const divMensaje = document.getElementById("divMensaje");
 
 function mostrarError(id, msg) {
@@ -113,15 +75,14 @@ function mostrarError(id, msg) {
 function mostrarMensaje(tipo, msg) {
     divMensaje.className = "alert alert-" + tipo;
     divMensaje.textContent = msg;
+    divMensaje.classList.remove("d-none");
 }
 
 function validar() {
     let error = false;
-
     const email = correo.value.trim();
     const password = pass.value;
 
-    // EMAIL
     if (email === "") {
         mostrarError("errorCorreo", "El correo es obligatorio");
         error = true;
@@ -132,7 +93,6 @@ function validar() {
         mostrarError("errorCorreo", "");
     }
 
-    // PASSWORD
     if (password === "") {
         mostrarError("errorPassword", "La contraseña es obligatoria");
         error = true;
@@ -146,20 +106,35 @@ function validar() {
     return !error;
 }
 
-form.addEventListener("submit", function(e) {
+form.addEventListener("submit", async function(e) {
     e.preventDefault();
 
-    if (validar()) {
-
-        // LOGIN SIMULADO (luego API)
-        mostrarMensaje("success", "Acceso correcto. Entrando al panel...");
-
-        setTimeout(() => {
-            window.location.href = "dashboard.html";
-        }, 800);
-
-    } else {
+    if (!validar()) {
         mostrarMensaje("danger", "Corrige los errores del formulario");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API}/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: correo.value.trim(),
+                password: pass.value
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            sessionStorage.setItem("adminEmail", data.email);
+            mostrarMensaje("success", "Acceso correcto. Entrando al panel...");
+            setTimeout(() => { window.location.href = "dashboard.html"; }, 800);
+        } else {
+            const err = await response.json();
+            mostrarMensaje("danger", err.detail || "Credenciales incorrectas");
+        }
+    } catch (e) {
+        mostrarMensaje("danger", "Error de conexión con el servidor");
     }
 });
 </script>
